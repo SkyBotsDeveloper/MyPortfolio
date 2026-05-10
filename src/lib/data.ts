@@ -119,7 +119,8 @@ export const journalEntries = [
 export const archiveProjects = [
   {
     title: "Elite Stuff",
-    description: "465+ FREE curated and verified resources",
+    description:
+      "A curated vault of 465+ verified free resources, organized for fast discovery across tools, assets, learning links, and useful utilities.",
     link: "https://elite-stuff.vercel.app",
   },
   {
@@ -136,17 +137,20 @@ export const archiveProjects = [
   },
   {
     title: "JioSaavn API",
-    description: "Unofficial API for music data access",
-    link: "https://jiosaavn-vert.vercel.app",
+    description:
+      "Music data API for search, songs, albums, playlists, and metadata access, built for smooth integration inside music apps and Telegram bots.",
+    link: "https://elitejiosaavn-api.vercel.app/",
   },
   {
     title: "Temp Mails",
-    description: "Generate unlimited temporary emails",
+    description:
+      "Temporary email utility for generating disposable inboxes quickly, useful for testing, verification flows, and privacy-focused workflows.",
     link: "https://elitetempmails.vercel.app",
   },
   {
     title: "Drive Search",
-    description: "Get direct Google Drive links instantly",
+    description:
+      "Focused Google Drive search tool that helps surface direct file links quickly through a clean custom search experience.",
     link: "https://cse.google.com/cse?cx=167f964aecdad17c5",
   },
   {
@@ -155,11 +159,6 @@ export const archiveProjects = [
       "Free YouTube API for music bots, built for easy testing and direct integration into playback systems.",
     link: "https://youtubeapi-4899a42b3b68.herokuapp.com/",
     details: ["API Key: itsmesid", "Music bot ready", "Free access"],
-  },
-  {
-    title: "TeamX Docs",
-    description: "API documentation with live testing",
-    link: "https://teamx-docs.netlify.app",
   },
 ] as const;
 
