@@ -14,6 +14,7 @@ import { HeroSection } from "./components/HeroSection";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { useSceneTransitions } from "./hooks/useSceneTransitions";
 import { navItems } from "./lib/data";
+import { warmupSite } from "./lib/preload";
 import { useActiveSection } from "./hooks/useActiveSection";
 
 const AboutSection = lazy(() =>
@@ -90,6 +91,7 @@ const scrollToSection = (sectionId: string) => {
 };
 
 const preloadCriticalSections = () => {
+  void warmupSite();
   void import("./components/AboutSection");
   void import("./components/SelectedWorksSection");
   void import("./components/JournalSection");
@@ -107,6 +109,7 @@ const preloadDeferredSections = () => {
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const warmup = useMemo(() => warmupSite(), []);
   const sectionIds = useMemo(() => navItems.map((item) => item.id), []);
   const { activeSection, scrolled } = useActiveSection(sectionIds);
   const navigate = useNavigate();
@@ -205,7 +208,11 @@ export default function App() {
       <CursorAtmosphere />
       <AnimatePresence mode="wait">
         {isLoading ? (
-          <LoadingScreen key="loader" onComplete={() => setIsLoading(false)} />
+          <LoadingScreen
+            key="loader"
+            warmup={warmup}
+            onComplete={() => setIsLoading(false)}
+          />
         ) : null}
       </AnimatePresence>
       <FloatingNavbar

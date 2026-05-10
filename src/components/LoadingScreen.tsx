@@ -5,27 +5,50 @@ const words = ["Build", "Create", "Scale"];
 
 interface LoadingScreenProps {
   onComplete: () => void;
+  warmup?: Promise<void>;
 }
 
-export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
+export const LoadingScreen = ({ onComplete, warmup }: LoadingScreenProps) => {
   const [count, setCount] = useState(0);
   const [wordIndex, setWordIndex] = useState(0);
 
   useEffect(() => {
     const duration = 2700;
+    const maxWait = 4600;
     const start = performance.now();
     let frame = 0;
     let completionTimer = 0;
+    let warmupReady = false;
+    let completed = false;
+
+    const complete = () => {
+      if (completed) {
+        return;
+      }
+
+      completed = true;
+      setCount(100);
+      completionTimer = window.setTimeout(onComplete, 400);
+    };
+
+    void (warmup ?? Promise.resolve()).then(() => {
+      warmupReady = true;
+    });
 
     const update = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
+      const elapsed = now - start;
+      const timeProgress = Math.min(elapsed / duration, 1);
+      const waitProgress = Math.min(elapsed / maxWait, 1);
+      const progress = warmupReady
+        ? timeProgress
+        : Math.min(0.94, Math.max(timeProgress * 0.92, waitProgress * 0.94));
       const nextCount = Math.round(progress * 100);
       setCount(nextCount);
 
-      if (progress < 1) {
+      if ((timeProgress < 1 || !warmupReady) && elapsed < maxWait) {
         frame = window.requestAnimationFrame(update);
       } else {
-        completionTimer = window.setTimeout(onComplete, 400);
+        complete();
       }
     };
 
