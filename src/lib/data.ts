@@ -373,8 +373,8 @@ export const contactCards: ContactCard[] = [
     value: "Siddhartha Abhimanyu",
   },
   {
-    label: "Team Support",
-    value: "@VivaanSupport",
-    href: "https://t.me/VivaanSupport",
+    label: "Telegram Channel",
+    value: "@aboutelite",
+    href: "https://t.me/aboutelite",
   },
 ] as const;
