@@ -26,12 +26,13 @@ const getAdaptiveMotionState = (): AdaptiveMotionState => {
   };
   const isCompact = window.innerWidth < 480;
   const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+  const isSmallTouch = isTouch && window.innerWidth < 768;
   const lowMemory =
     typeof navigatorHints.deviceMemory === "number" &&
-    navigatorHints.deviceMemory <= 4;
+    navigatorHints.deviceMemory <= 2;
   const lowCpu =
     typeof navigator.hardwareConcurrency === "number" &&
-    navigator.hardwareConcurrency <= 4;
+    navigator.hardwareConcurrency <= 2;
 
   return {
     reduceMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -39,7 +40,7 @@ const getAdaptiveMotionState = (): AdaptiveMotionState => {
     isCompact,
     isDesktop: window.innerWidth >= 1024,
     isTouch,
-    isLowPower: isCompact || isTouch || lowMemory || lowCpu,
+    isLowPower: isCompact || isSmallTouch || lowMemory || lowCpu,
   };
 };
 

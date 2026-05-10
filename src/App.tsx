@@ -89,11 +89,14 @@ const scrollToSection = (sectionId: string) => {
   return true;
 };
 
-const preloadSections = () => {
+const preloadCriticalSections = () => {
   void import("./components/AboutSection");
   void import("./components/SelectedWorksSection");
   void import("./components/JournalSection");
   void import("./components/ProjectArchiveSection");
+};
+
+const preloadDeferredSections = () => {
   void import("./components/BotsShowcaseSection");
   void import("./components/CapabilitiesSection");
   void import("./components/TimelineSection");
@@ -168,9 +171,29 @@ export default function App() {
     const cancelIdleCallback =
       window.cancelIdleCallback ?? ((id: number) => window.clearTimeout(id));
 
-    const idleId = requestIdleCallback(preloadSections, { timeout: 1600 });
+    let criticalIdleId = 0;
+    let deferredIdleId = 0;
+    const criticalTimer = window.setTimeout(() => {
+      criticalIdleId = requestIdleCallback(preloadCriticalSections, {
+        timeout: 1200,
+      });
+    }, 700);
+    const deferredTimer = window.setTimeout(() => {
+      deferredIdleId = requestIdleCallback(preloadDeferredSections, {
+        timeout: 2600,
+      });
+    }, 2600);
 
-    return () => cancelIdleCallback(idleId);
+    return () => {
+      window.clearTimeout(criticalTimer);
+      window.clearTimeout(deferredTimer);
+      if (criticalIdleId) {
+        cancelIdleCallback(criticalIdleId);
+      }
+      if (deferredIdleId) {
+        cancelIdleCallback(deferredIdleId);
+      }
+    };
   }, [isLoading]);
 
   return (

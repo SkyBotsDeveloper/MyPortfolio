@@ -5,7 +5,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import type Hls from "hls.js";
+import Hls from "hls.js";
 import { PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAdaptiveMotion } from "../hooks/useAdaptiveMotion";
 import { gsap } from "../lib/gsap";
@@ -17,9 +17,32 @@ interface HeroSectionProps {
 
 const videoSrc =
   "https://stream.mux.com/Aa02T7oM1wH5Mk5EEVDYhbZ1ChcdhRsS2m1NYyx4Ua1g.m3u8";
+const heroPosterSrc =
+  "https://image.mux.com/Aa02T7oM1wH5Mk5EEVDYhbZ1ChcdhRsS2m1NYyx4Ua1g/thumbnail.jpg?time=1&width=1920&fit_mode=preserve";
+
+const getPreferredHeroLevel = (levels: Hls["levels"], isLowPower: boolean) => {
+  if (!levels.length || typeof window === "undefined") {
+    return -1;
+  }
+
+  const dpr = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.25 : 2);
+  const targetHeight = Math.min(
+    isLowPower ? 720 : 1440,
+    Math.max(isLowPower ? 540 : 900, Math.ceil(window.innerHeight * dpr)),
+  );
+  const sortedLevels = levels
+    .map((level, index) => ({ index, height: level.height || 0 }))
+    .sort((levelA, levelB) => levelA.height - levelB.height);
+  const preferredLevel =
+    sortedLevels.find((level) => level.height >= targetHeight) ??
+    sortedLevels[sortedLevels.length - 1];
+
+  return preferredLevel?.index ?? -1;
+};
 
 export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const [roleIndex, setRoleIndex] = useState(0);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRef = useRef<HTMLDivElement | null>(null);
@@ -50,33 +73,60 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
     let hls: Hls | null = null;
     let cancelled = false;
 
-    video.preload = isLowPower || reduceMotion ? "none" : "metadata";
+    const markReady = () => {
+      if (cancelled) {
+        return;
+      }
+
+      setIsVideoReady(true);
+      void video.play().catch(() => undefined);
+    };
+
+    video.preload = isLowPower || reduceMotion ? "metadata" : "auto";
+    video.addEventListener("loadeddata", markReady);
+    video.addEventListener("canplay", markReady);
 
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = videoSrc;
       video.load();
+      void video.play().catch(() => undefined);
     } else {
-      void import("hls.js")
-        .then(({ default: HlsConstructor }) => {
-          if (cancelled || !HlsConstructor.isSupported()) {
+      if (!Hls.isSupported()) {
+        setIsVideoReady(false);
+      } else {
+        hls = new Hls({
+          autoStartLoad: false,
+          enableWorker: true,
+          lowLatencyMode: false,
+          capLevelToPlayerSize: false,
+          startFragPrefetch: true,
+          maxBufferLength: isLowPower ? 18 : 45,
+          backBufferLength: isLowPower ? 8 : 24,
+        });
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          if (!hls || cancelled) {
             return;
           }
 
-          hls = new HlsConstructor({
-            enableWorker: true,
-            lowLatencyMode: false,
-            capLevelToPlayerSize: true,
-            maxBufferLength: isLowPower ? 12 : 24,
-            backBufferLength: isLowPower ? 6 : 18,
-          });
-          hls.loadSource(videoSrc);
-          hls.attachMedia(video);
-        })
-        .catch(() => undefined);
+          const preferredLevel = getPreferredHeroLevel(hls.levels, isLowPower);
+
+          if (preferredLevel >= 0) {
+            hls.startLevel = preferredLevel;
+            hls.nextLevel = preferredLevel;
+          }
+
+          hls.startLoad(0);
+          void video.play().catch(() => undefined);
+        });
+      }
     }
 
     return () => {
       cancelled = true;
+      video.removeEventListener("loadeddata", markReady);
+      video.removeEventListener("canplay", markReady);
       hls?.destroy();
     };
   }, [isLowPower, reduceMotion]);
@@ -245,6 +295,12 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
       onPointerLeave={enableDepthMotion ? handlePointerLeave : undefined}
     >
       <div ref={mediaRef} className="absolute inset-0 z-0">
+        <div
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${isVideoReady ? "opacity-0" : "opacity-100"}`}
+          style={{
+            backgroundImage: `linear-gradient(180deg, rgba(4,4,4,0.08), rgba(4,4,4,0.38)), url(${heroPosterSrc})`,
+          }}
+        />
         <video
           ref={videoRef}
           autoPlay
@@ -253,8 +309,9 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           playsInline
           aria-hidden="true"
           disablePictureInPicture
-          preload="metadata"
-          className="hero-video absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover"
+          poster={heroPosterSrc}
+          preload="auto"
+          className={`hero-video absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-700 ${isVideoReady ? "opacity-100" : "opacity-0"}`}
         />
       </div>
 
