@@ -1,0 +1,74 @@
+import { motion } from "framer-motion";
+import { archiveProjects } from "../lib/data";
+import {
+  handlePointerSurfaceLeave,
+  handlePointerSurfaceMove,
+} from "../lib/pointerSurface";
+import { SectionIntro } from "./SectionIntro";
+
+export const ProjectArchiveSection = () => {
+  return (
+    <section
+      id="more-projects"
+      data-scene
+      className="scene-section section-shell section-ambient scroll-mt-28 bg-bg py-16 md:py-24"
+    >
+      <div data-scene-stage className="scene-stage section-frame">
+        <SectionIntro
+          eyebrow="Archive"
+          title={
+            <>
+              More <span className="font-display italic">projects</span>
+            </>
+          }
+          description="A wider archive of shipped utilities, tools, APIs, and experiments."
+        />
+
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {archiveProjects.map((project, index) => (
+            <motion.a
+              key={project.title}
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+              className="depth-card interactive-surface interactive-surface-light group halo-card relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl"
+              initial={{ opacity: 0, y: 24, scale: 0.985, filter: "blur(10px)" }}
+              whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              whileHover={{
+                y: -8,
+                rotateX: 4,
+                rotateY: index % 2 === 0 ? -4 : 4,
+                scale: 1.008,
+              }}
+              transition={{
+                duration: 0.7,
+                delay: index * 0.05,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              viewport={{ once: true, margin: "-100px" }}
+              style={{ transformPerspective: 1200 }}
+              onPointerMove={handlePointerSurfaceMove}
+              onPointerLeave={handlePointerSurfaceLeave}
+            >
+              <div className="!absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <div className="!absolute right-6 top-6 inline-flex items-center rounded-full border border-white/10 bg-black/30 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted transition duration-300 group-hover:border-[#89AACC]/40 group-hover:text-text-primary">
+                Open -&gt;
+              </div>
+              <div className="interactive-foreground max-w-full pt-12">
+                <div className="mb-4 pr-24 text-[11px] uppercase tracking-[0.24em] text-muted">
+                  Project
+                </div>
+                <h3 className="text-2xl tracking-tight text-text-primary">
+                  {project.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-muted">
+                  {project.description}
+                </p>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};

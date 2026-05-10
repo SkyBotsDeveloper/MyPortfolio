@@ -1,0 +1,11 @@
+{
+  "name": "Siddhartha Abhimanyu Portfolio",
+  "short_name": "SID",
+  "description": "Premium portfolio for Siddhartha Abhimanyu, featuring Telegram bots, web apps, AI tools, OSINT workflows, and automation systems.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "any",
+  "categories": ["portfolio", "developer", "productivity"]
+}
