@@ -45,14 +45,15 @@ export const featuredProjects = [
     badge: "Search Core",
   },
   {
-    title: "Elite Music",
-    category: "Music Streaming",
-    description: "Full-featured music streaming with sleek design.",
-    link: "https://elitemusic.vercel.app",
+    title: "Aurex Music",
+    category: "Premium Music App",
+    description:
+      "Premium cross-platform music app with smooth playback, synced lyrics, offline downloads, shared rooms, live chat, APK and Windows setup access.",
+    link: "https://aurex-music.pages.dev",
     span: "md:col-span-5",
     visual:
-      "radial-gradient(circle at 76% 18%, rgba(137,170,204,0.3), transparent 30%), linear-gradient(180deg, rgba(11,16,28,0.95), rgba(3,3,3,1)), linear-gradient(120deg, rgba(78,133,191,0.18), rgba(4,4,4,0) 55%)",
-    badge: "Media Layer",
+      "radial-gradient(circle at 74% 18%, rgba(137,170,204,0.34), transparent 30%), radial-gradient(circle at 22% 72%, rgba(78,133,191,0.24), transparent 32%), linear-gradient(180deg, rgba(9,15,24,0.96), rgba(3,3,3,1)), linear-gradient(120deg, rgba(78,133,191,0.2), rgba(4,4,4,0) 58%)",
+    badge: "Aurex Layer",
   },
   {
     title: "Elite Player",
