@@ -115,6 +115,16 @@ export const SelectedWorksSection = ({
                     <p className="mt-3 max-w-md text-sm leading-7 text-text-primary/72 md:text-base">
                       {project.description}
                     </p>
+                    {"credentials" in project ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-text-primary/78">
+                          User: {project.credentials.username}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-text-primary/78">
+                          Pass: {project.credentials.password}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="text-sm uppercase tracking-[0.24em] text-muted transition duration-300 group-hover:text-text-primary">

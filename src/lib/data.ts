@@ -59,6 +59,10 @@ export const featuredProjects = [
     title: "Elite Player",
     category: "Movies Entertainment",
     description: "Free movie streaming platform with vast collection.",
+    credentials: {
+      username: "elite",
+      password: "free123",
+    },
     link: "https://elite-player.vercel.app",
     span: "md:col-span-5",
     visual:
