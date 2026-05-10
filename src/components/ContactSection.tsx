@@ -75,7 +75,10 @@ export const ContactSection = ({ onNavigate }: ContactSectionProps) => {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(137,170,204,0.14),transparent_18%),radial-gradient(circle_at_82%_78%,rgba(78,133,191,0.12),transparent_24%)]" />
 
       <div className="relative z-10 overflow-hidden border-y border-white/10 bg-black/20 backdrop-blur-sm">
-        <div ref={marqueeRef} className="flex w-max whitespace-nowrap py-5">
+        <div
+          ref={marqueeRef}
+          className={`flex w-max whitespace-nowrap py-5 ${isLowPower || reduceMotion ? "marquee-mobile" : ""}`}
+        >
           <span className="pr-8 text-[clamp(1.8rem,5vw,4rem)] font-medium tracking-[0.18em] text-white/12">
             {marqueeLine}
           </span>

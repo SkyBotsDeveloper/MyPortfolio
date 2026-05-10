@@ -65,6 +65,15 @@
   }
 }
 
+@keyframes marquee-mobile {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -195,6 +204,11 @@ svg {
 
 .animate-glow-pulse {
   animation: glow-pulse 7s ease-in-out infinite;
+}
+
+.marquee-mobile {
+  animation: marquee-mobile 34s linear infinite;
+  will-change: transform;
 }
 
 .glass-panel {
