@@ -123,9 +123,16 @@ export const archiveProjects = [
     link: "https://elite-stuff.vercel.app",
   },
   {
-    title: "HealSpace",
-    description: "Mental wellness platform with AI companion",
-    link: "https://heal-space.netlify.app",
+    title: "Elite LLMs",
+    description:
+      "OpenAI-compatible platform with 50 chat LLMs and 7 image models for chat, image generation, playgrounds, and direct API integration.",
+    link: "https://elite-llms.vercel.app",
+    details: [
+      "API Base: https://elite-llms.vercel.app/v1",
+      "API Key: theelitekey",
+      "Docs: /docs",
+    ],
+    docsLink: "https://elite-llms.vercel.app/docs",
   },
   {
     title: "JioSaavn API",
@@ -143,9 +150,11 @@ export const archiveProjects = [
     link: "https://cse.google.com/cse?cx=167f964aecdad17c5",
   },
   {
-    title: "Plant Bloom",
-    description: "Plant identification and care guide",
-    link: "https://plantbloomexplorer.netlify.app/",
+    title: "YouTube Converter API",
+    description:
+      "Free YouTube API for music bots, built for easy testing and direct integration into playback systems.",
+    link: "https://youtubeapi-4899a42b3b68.herokuapp.com/",
+    details: ["API Key: itsmesid", "Music bot ready", "Free access"],
   },
   {
     title: "TeamX Docs",

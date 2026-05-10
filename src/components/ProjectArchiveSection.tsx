@@ -64,6 +64,18 @@ export const ProjectArchiveSection = () => {
                 <p className="mt-3 text-sm leading-7 text-muted">
                   {project.description}
                 </p>
+                {"details" in project ? (
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {project.details.map((detail) => (
+                      <span
+                        key={detail}
+                        className="max-w-full break-all rounded-full border border-[#89AACC]/20 bg-[#89AACC]/[0.06] px-3 py-1.5 text-[11px] normal-case tracking-[0.08em] text-text-primary/74"
+                      >
+                        {detail}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </motion.a>
           ))}
