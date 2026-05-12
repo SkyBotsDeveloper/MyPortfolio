@@ -370,8 +370,8 @@ export const contactCards: ContactCard[] = [
   },
   {
     label: "LinkedIn",
-    value: "Sky Developer",
-    href: "https://www.linkedin.com/in/sky-developer-89697a40a",
+    value: "Siddhartha Abhimanyu",
+    href: "https://www.linkedin.com/in/siddhartha-abhimanyu-89697a40a/",
   },
   {
     label: "Telegram Channel",

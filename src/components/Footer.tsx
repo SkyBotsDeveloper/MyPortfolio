@@ -39,7 +39,7 @@ export const Footer = ({ onNavigate }: FooterProps) => {
             WhatsApp
           </a>
           <a
-            href="https://www.linkedin.com/in/sky-developer-89697a40a"
+            href="https://www.linkedin.com/in/siddhartha-abhimanyu-89697a40a/"
             target="_blank"
             rel="noreferrer"
           >
