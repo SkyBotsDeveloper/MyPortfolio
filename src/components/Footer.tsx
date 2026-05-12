@@ -34,11 +34,17 @@ export const Footer = ({ onNavigate }: FooterProps) => {
           <a href="https://t.me/IflexElite" target="_blank" rel="noreferrer">
             Telegram
           </a>
-          <a href="mailto:elitesid23@gmail.com">Email</a>
+          <a href="mailto:skybotsdeveloper@gmail.com">Email</a>
           <a href="https://wa.me/639513139927" target="_blank" rel="noreferrer">
             WhatsApp
           </a>
-          <span>LinkedIn / Siddhartha Abhimanyu</span>
+          <a
+            href="https://www.linkedin.com/in/sky-developer-89697a40a"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
+          </a>
         </div>
 
         <div className="space-y-1 text-left md:text-right">

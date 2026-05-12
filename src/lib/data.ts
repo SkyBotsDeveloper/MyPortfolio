@@ -365,12 +365,13 @@ export const contactCards: ContactCard[] = [
   },
   {
     label: "Email",
-    value: "elitesid23@gmail.com",
-    href: "mailto:elitesid23@gmail.com",
+    value: "skybotsdeveloper@gmail.com",
+    href: "mailto:skybotsdeveloper@gmail.com",
   },
   {
     label: "LinkedIn",
-    value: "Siddhartha Abhimanyu",
+    value: "Sky Developer",
+    href: "https://www.linkedin.com/in/sky-developer-89697a40a",
   },
   {
     label: "Telegram Channel",
