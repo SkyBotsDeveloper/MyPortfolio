@@ -42,6 +42,7 @@ export const VideoBackdrop = ({
           muted
           loop
           playsInline
+          crossOrigin="anonymous"
         />
       )}
       <div className={`absolute inset-0 ${overlayClassName}`} />

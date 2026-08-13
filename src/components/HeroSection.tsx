@@ -73,60 +73,83 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
     let hls: Hls | null = null;
     let cancelled = false;
 
+    const startPlayback = () => {
+      if (cancelled) {
+        return;
+      }
+
+      void video.play().catch(() => undefined);
+    };
+
     const markReady = () => {
       if (cancelled) {
         return;
       }
 
       setIsVideoReady(true);
-      void video.play().catch(() => undefined);
+      startPlayback();
     };
 
+    const markUnavailable = () => {
+      if (cancelled) {
+        return;
+      }
+
+      setIsVideoReady(false);
+    };
+
+    setIsVideoReady(false);
     video.preload = isLowPower || reduceMotion ? "metadata" : "auto";
     video.addEventListener("loadeddata", markReady);
     video.addEventListener("canplay", markReady);
+    video.addEventListener("error", markUnavailable);
 
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    if (Hls.isSupported()) {
+      hls = new Hls({
+        autoStartLoad: false,
+        enableWorker: true,
+        lowLatencyMode: false,
+        capLevelToPlayerSize: false,
+        startFragPrefetch: true,
+        maxBufferLength: isLowPower ? 18 : 45,
+        backBufferLength: isLowPower ? 8 : 24,
+      });
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (!hls || cancelled) {
+          return;
+        }
+
+        const preferredLevel = getPreferredHeroLevel(hls.levels, isLowPower);
+
+        if (preferredLevel >= 0) {
+          hls.startLevel = preferredLevel;
+          hls.nextLevel = preferredLevel;
+        }
+
+        hls.startLoad(0);
+        startPlayback();
+      });
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          hls?.destroy();
+          markUnavailable();
+        }
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = videoSrc;
       video.load();
-      void video.play().catch(() => undefined);
+      startPlayback();
     } else {
-      if (!Hls.isSupported()) {
-        setIsVideoReady(false);
-      } else {
-        hls = new Hls({
-          autoStartLoad: false,
-          enableWorker: true,
-          lowLatencyMode: false,
-          capLevelToPlayerSize: false,
-          startFragPrefetch: true,
-          maxBufferLength: isLowPower ? 18 : 45,
-          backBufferLength: isLowPower ? 8 : 24,
-        });
-        hls.loadSource(videoSrc);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          if (!hls || cancelled) {
-            return;
-          }
-
-          const preferredLevel = getPreferredHeroLevel(hls.levels, isLowPower);
-
-          if (preferredLevel >= 0) {
-            hls.startLevel = preferredLevel;
-            hls.nextLevel = preferredLevel;
-          }
-
-          hls.startLoad(0);
-          void video.play().catch(() => undefined);
-        });
-      }
+      markUnavailable();
     }
 
     return () => {
       cancelled = true;
       video.removeEventListener("loadeddata", markReady);
       video.removeEventListener("canplay", markReady);
+      video.removeEventListener("error", markUnavailable);
       hls?.destroy();
     };
   }, [isLowPower, reduceMotion]);
@@ -309,6 +332,7 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
           playsInline
           aria-hidden="true"
           disablePictureInPicture
+          crossOrigin="anonymous"
           poster={heroPosterSrc}
           preload="auto"
           className={`hero-video absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-700 ${isVideoReady ? "opacity-100" : "opacity-0"}`}

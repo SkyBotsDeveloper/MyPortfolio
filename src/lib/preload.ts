@@ -22,7 +22,7 @@ const warmupImage = (src: string) =>
 const warmupFetch = (url: string) =>
   fetch(url, {
     cache: "force-cache",
-    mode: "no-cors",
+    mode: "cors",
     priority: "low",
   } as RequestInit & { priority?: "high" | "low" | "auto" })
     .then(() => undefined)

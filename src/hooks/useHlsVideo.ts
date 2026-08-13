@@ -21,13 +21,21 @@ export const useHlsVideo = (
     let cancelled = false;
     let mounted = true;
 
+    const startPlayback = () => {
+      if (cancelled) {
+        return;
+      }
+
+      void video.play().catch(() => undefined);
+    };
+
     const markReady = () => {
       if (cancelled) {
         return;
       }
 
       setIsReady(true);
-      void video.play().catch(() => undefined);
+      startPlayback();
     };
 
     const markError = () => {
@@ -51,21 +59,13 @@ export const useHlsVideo = (
     video.addEventListener("canplay", markReady);
     video.addEventListener("error", markError);
 
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = source;
-      video.load();
-    } else {
-      void import("hls.js")
-        .then(({ default: HlsConstructor }) => {
-          if (!mounted || cancelled) {
-            return;
-          }
+    void import("hls.js")
+      .then(({ default: HlsConstructor }) => {
+        if (!mounted || cancelled) {
+          return;
+        }
 
-          if (!HlsConstructor.isSupported()) {
-            markError();
-            return;
-          }
-
+        if (HlsConstructor.isSupported()) {
           hls = new HlsConstructor({
             enableWorker: true,
             lowLatencyMode: false,
@@ -75,16 +75,26 @@ export const useHlsVideo = (
           });
           hls.loadSource(source);
           hls.attachMedia(video);
-          hls.on(HlsConstructor.Events.MANIFEST_PARSED, markReady);
+          hls.on(HlsConstructor.Events.MANIFEST_PARSED, startPlayback);
           hls.on(HlsConstructor.Events.ERROR, (_event, data) => {
             if (data.fatal) {
               hls?.destroy();
               markError();
             }
           });
-        })
-        .catch(markError);
-    }
+          return;
+        }
+
+        if (video.canPlayType("application/vnd.apple.mpegurl")) {
+          video.src = source;
+          video.load();
+          startPlayback();
+          return;
+        }
+
+        markError();
+      })
+      .catch(markError);
 
     return () => {
       mounted = false;
