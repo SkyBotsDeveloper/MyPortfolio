@@ -5,6 +5,7 @@ import { useAdaptiveMotion } from "./useAdaptiveMotion";
 export const useHlsVideo = (
   videoRef: RefObject<HTMLVideoElement | null>,
   source: string,
+  enabled = true,
 ) => {
   const [hasError, setHasError] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -12,6 +13,11 @@ export const useHlsVideo = (
 
   useEffect(() => {
     const video = videoRef.current;
+
+    if (!enabled) {
+      setIsReady(false);
+      return;
+    }
 
     if (!video) {
       return;
@@ -107,7 +113,7 @@ export const useHlsVideo = (
       video.removeEventListener("error", markError);
       hls?.destroy();
     };
-  }, [isLowPower, reduceMotion, source, videoRef]);
+  }, [enabled, isLowPower, reduceMotion, source, videoRef]);
 
   return { hasError, isReady };
 };

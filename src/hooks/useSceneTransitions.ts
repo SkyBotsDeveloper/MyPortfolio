@@ -20,7 +20,7 @@ export const useSceneTransitions = () => {
       sceneCount = document.querySelectorAll("[data-scene]").length;
       mm = gsap.matchMedia();
 
-      if (reduceMotion) {
+      if (reduceMotion || !enableHeavyMotion) {
         ScrollTrigger.refresh();
         return;
       }
@@ -37,6 +37,10 @@ export const useSceneTransitions = () => {
           };
           const sections = gsap.utils.toArray<HTMLElement>("[data-scene]");
           const isDesktop = Boolean(conditions.desktop);
+
+          if (!isDesktop) {
+            return;
+          }
 
           sections.forEach((section, index) => {
             const stage =

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useAdaptiveMotion } from "../hooks/useAdaptiveMotion";
 import { useHlsVideo } from "../hooks/useHlsVideo";
@@ -19,14 +19,20 @@ export const VideoBackdrop = ({
   className = "",
   videoClassName = "",
 }: VideoBackdropProps) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const { isDesktop, isLowPower, reduceMotion } = useAdaptiveMotion();
   const shouldUseVideo = isDesktop && !isLowPower && !reduceMotion;
-  const { hasError, isReady } = useHlsVideo(videoRef, HLS_SOURCE);
+  const isNearViewport = useInView(containerRef, {
+    amount: 0.01,
+    margin: "600px 0px",
+  });
+  const shouldLoadVideo = shouldUseVideo && isNearViewport;
+  const { hasError, isReady } = useHlsVideo(videoRef, HLS_SOURCE, shouldLoadVideo);
 
   return (
-    <div className={`absolute inset-0 z-0 overflow-hidden ${className}`}>
-      {hasError || !shouldUseVideo ? (
+    <div ref={containerRef} className={`absolute inset-0 z-0 overflow-hidden ${className}`}>
+      {hasError || !shouldLoadVideo ? (
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(137,170,204,0.18),transparent_25%),radial-gradient(circle_at_80%_20%,_rgba(78,133,191,0.18),transparent_30%),linear-gradient(180deg,_rgba(12,12,12,1),_rgba(4,4,4,1))]">
           <div className="absolute left-[10%] top-[16%] h-52 w-52 rounded-full bg-[#89AACC]/10 blur-[120px]" />
           <div className="absolute bottom-[12%] right-[8%] h-56 w-56 rounded-full bg-[#4E85BF]/10 blur-[140px]" />

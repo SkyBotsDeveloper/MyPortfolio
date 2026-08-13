@@ -13,8 +13,8 @@ export const LoadingScreen = ({ onComplete, warmup }: LoadingScreenProps) => {
   const [wordIndex, setWordIndex] = useState(0);
 
   useEffect(() => {
-    const duration = 2700;
-    const maxWait = 4600;
+    const duration = 1700;
+    const maxWait = 2800;
     const start = performance.now();
     let frame = 0;
     let completionTimer = 0;

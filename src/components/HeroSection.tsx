@@ -43,11 +43,14 @@ const getPreferredHeroLevel = (levels: Hls["levels"], isLowPower: boolean) => {
 export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isHeroNearViewport, setIsHeroNearViewport] = useState(true);
   const heroRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const { enableDepthMotion, enableHeavyMotion, isCompact, isLowPower, reduceMotion } =
     useAdaptiveMotion();
+  const shouldUseHeroVideo = !isLowPower && !reduceMotion;
+  const shouldLoadHeroVideo = shouldUseHeroVideo && isHeroNearViewport;
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothX = useSpring(mouseX, { stiffness: 90, damping: 20, mass: 0.8 });
@@ -67,8 +70,28 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
   }, []);
 
   useEffect(() => {
+    const section = heroRef.current;
+
+    if (!section || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsHeroNearViewport(entry.isIntersecting),
+      { rootMargin: "500px 0px", threshold: 0 },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!shouldLoadHeroVideo || !video) {
+      setIsVideoReady(false);
+      return;
+    }
 
     let hls: Hls | null = null;
     let cancelled = false;
@@ -147,12 +170,15 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
 
     return () => {
       cancelled = true;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
       video.removeEventListener("loadeddata", markReady);
       video.removeEventListener("canplay", markReady);
       video.removeEventListener("error", markUnavailable);
       hls?.destroy();
     };
-  }, [isLowPower, reduceMotion]);
+  }, [isLowPower, reduceMotion, shouldLoadHeroVideo]);
 
   useLayoutEffect(() => {
     if (!heroRef.current) {
@@ -324,19 +350,21 @@ export const HeroSection = ({ onNavigate }: HeroSectionProps) => {
             backgroundImage: `linear-gradient(180deg, rgba(4,4,4,0.08), rgba(4,4,4,0.38)), url(${heroPosterSrc})`,
           }}
         />
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
-          disablePictureInPicture
-          crossOrigin="anonymous"
-          poster={heroPosterSrc}
-          preload="auto"
-          className={`hero-video absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-700 ${isVideoReady ? "opacity-100" : "opacity-0"}`}
-        />
+        {shouldLoadHeroVideo ? (
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+            disablePictureInPicture
+            crossOrigin="anonymous"
+            poster={heroPosterSrc}
+            preload="auto"
+            className={`hero-video absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-700 ${isVideoReady ? "opacity-100" : "opacity-0"}`}
+          />
+        ) : null}
       </div>
 
       <div className="hero-atmosphere absolute inset-0 z-[1]">

@@ -1,19 +1,37 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export const useActiveSection = (sectionIds: readonly string[]) => {
   const ids = useMemo(() => [...sectionIds], [sectionIds]);
   const [activeSection, setActiveSection] = useState(ids[0] ?? "home");
   const [scrolled, setScrolled] = useState(false);
+  const lastScrolledRef = useRef(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
+    let frame = 0;
+
+    const updateScrolled = () => {
+      frame = 0;
+      const nextScrolled = window.scrollY > 100;
+
+      if (lastScrolledRef.current !== nextScrolled) {
+        lastScrolledRef.current = nextScrolled;
+        setScrolled(nextScrolled);
+      }
     };
 
-    handleScroll();
+    const handleScroll = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(updateScrolled);
+      }
+    };
+
+    updateScrolled();
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   useEffect(() => {

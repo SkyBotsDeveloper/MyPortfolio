@@ -1,7 +1,5 @@
 const HERO_POSTER =
   "https://image.mux.com/Aa02T7oM1wH5Mk5EEVDYhbZ1ChcdhRsS2m1NYyx4Ua1g/thumbnail.jpg?time=1&width=1920&fit_mode=preserve";
-const HERO_HLS =
-  "https://stream.mux.com/Aa02T7oM1wH5Mk5EEVDYhbZ1ChcdhRsS2m1NYyx4Ua1g.m3u8";
 
 let warmupPromise: Promise<void> | null = null;
 
@@ -18,15 +16,6 @@ const warmupImage = (src: string) =>
       void image.decode().then(resolve).catch(resolve);
     }
   });
-
-const warmupFetch = (url: string) =>
-  fetch(url, {
-    cache: "force-cache",
-    mode: "cors",
-    priority: "low",
-  } as RequestInit & { priority?: "high" | "low" | "auto" })
-    .then(() => undefined)
-    .catch(() => undefined);
 
 const preloadSectionChunks = () =>
   Promise.allSettled([
@@ -46,7 +35,6 @@ export const warmupSite = () => {
   if (!warmupPromise) {
     warmupPromise = Promise.allSettled([
       warmupImage(HERO_POSTER),
-      warmupFetch(HERO_HLS),
       preloadSectionChunks(),
     ]).then(() => undefined);
   }

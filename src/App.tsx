@@ -1,4 +1,4 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import {
   Suspense,
   lazy,
@@ -16,6 +16,7 @@ import { useSceneTransitions } from "./hooks/useSceneTransitions";
 import { navItems } from "./lib/data";
 import { warmupSite } from "./lib/preload";
 import { useActiveSection } from "./hooks/useActiveSection";
+import { useAdaptiveMotion } from "./hooks/useAdaptiveMotion";
 
 const AboutSection = lazy(() =>
   import("./components/AboutSection").then((module) => ({
@@ -114,6 +115,7 @@ export default function App() {
   const { activeSection, scrolled } = useActiveSection(sectionIds);
   const navigate = useNavigate();
   const location = useLocation();
+  const { reduceMotion } = useAdaptiveMotion();
   useSceneTransitions();
 
   const handleNavigate = useCallback(
@@ -200,6 +202,7 @@ export default function App() {
   }, [isLoading]);
 
   return (
+    <MotionConfig reducedMotion={reduceMotion ? "always" : "user"}>
     <div className="relative min-h-screen overflow-x-hidden bg-bg text-text-primary">
       <a className="skip-link" href="#main-content">
         Skip to content
@@ -236,5 +239,6 @@ export default function App() {
         </Suspense>
       </main>
     </div>
+    </MotionConfig>
   );
 }
